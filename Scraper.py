@@ -67,3 +67,14 @@ if __name__ == "__main__":
     
     if html_descargado:
         print(f"¡Listo! Se descargaron {len(html_descargado)} caracteres de código fuente.")##comit = "Función de descarga mejorada con soporte para paginación y manejo de errores robusto."
+
+    # Bloque de prueba rápida 2:
+    url_prueba_2 = "https://listado.mercadolibre.com.pe/laptop"
+    html_descargado_2 = descargar_pagina_mercadolibre(url_prueba_2)
+    
+    if html_descargado_2:
+        datos_extraidos_2 = extraer_datos(html_descargado_2)
+        print(f"¡Éxito! Se encontraron {len(datos_extraidos_2)} laptops.")
+        
+        if datos_extraidos_2:
+            print("Primer resultado de Prueba 2:", datos_extraidos_2[0])
