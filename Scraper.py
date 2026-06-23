@@ -39,7 +39,17 @@ def extraer_datos(html_bruto):
     
     # Buscamos 'li' o 'div' que contengan la clase principal de los items
     elementos = sopa.find_all(['li', 'div'], class_=lambda c: c and 'ui-search-layout__item' in c)
-    
+   
+    for item in elementos:
+        etiqueta_a = item.find('a')
+        link = etiqueta_a.get('href', 'Sin link') if etiqueta_a else 'Sin link'
+        
+        etiqueta_titulo = item.find(['h2', 'h3'])
+        titulo = etiqueta_titulo.get_text(strip=True) if etiqueta_titulo else 'Sin título'
+        
+        etiqueta_precio = item.find('span', class_='andes-money-amount__fraction')
+        precio = etiqueta_precio.get_text(strip=True).replace('.', '') if etiqueta_precio else '0'
+        
     return lista_laptops
 
 # Bloque de prueba rápido
