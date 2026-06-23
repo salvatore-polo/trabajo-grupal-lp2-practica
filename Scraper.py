@@ -27,6 +27,21 @@ def descargar_pagina_mercadolibre(url):
         print(f"Error de red: {e}")
         return None
 
+from bs4 import BeautifulSoup
+
+def extraer_datos(html_bruto):
+    """
+    Toma el HTML descargado y extrae Título, Precio y Link de las laptops.
+    """
+    if not html_bruto: return []
+    sopa = BeautifulSoup(html_bruto, 'html.parser')
+    lista_laptops = []
+    
+    # Buscamos 'li' o 'div' que contengan la clase principal de los items
+    elementos = sopa.find_all(['li', 'div'], class_=lambda c: c and 'ui-search-layout__item' in c)
+    
+    return lista_laptops
+
 # Bloque de prueba rápido
 if __name__ == "__main__":
     # Probamos con la página 2 para confirmar que funciona
