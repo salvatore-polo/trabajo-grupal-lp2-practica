@@ -49,6 +49,13 @@ def extraer_datos(html_bruto):
         
         etiqueta_precio = item.find('span', class_='andes-money-amount__fraction')
         precio = etiqueta_precio.get_text(strip=True).replace('.', '') if etiqueta_precio else '0'
+       
+        if len(titulo) > 10 and precio != '0':
+            lista_laptops.append({
+                "titulo_crudo": titulo,
+                "precio": precio,
+                "link": link
+            })
         
     return lista_laptops
 
