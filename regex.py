@@ -14,3 +14,17 @@ SUB_MARCAS = {
     "predator": "Acer", "nitro": "Acer", "aspire": "Acer", "swift": "Acer",
     "galaxy book": "Samsung",
 }
+
+def extraer_marca(titulo):
+    for marca in MARCAS_CONOCIDAS:
+        patron = r"\b" + re.escape(marca) + r"\b"
+        if re.search(patron, titulo, re.IGNORECASE):
+            if marca.lower() == "macbook":
+                return "Apple"
+            return marca
+
+    for sub_marca, marca_real in SUB_MARCAS.items():
+        if re.search(r"\b" + re.escape(sub_marca) + r"\b", titulo, re.IGNORECASE):
+            return marca_real
+
+    return "Desconocida"
