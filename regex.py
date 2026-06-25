@@ -140,3 +140,61 @@ def extraer_almacenamiento(titulo):
 def extraer_tipo_almacenamiento(titulo):
     _, _, tipo = _extraer_memoria(titulo)
     return tipo
+
+def extraer_titulo_limpio(titulo):
+    return re.sub(r"\s+", " ", titulo).strip()
+
+
+def procesar_laptops(lista_laptops):
+    lista_titulo = []
+    lista_marca = []
+    lista_ram = []
+    lista_almacenamiento = []
+    lista_tipo_almacenamiento = []
+    lista_precio = []
+    lista_link = []
+
+    for laptop in lista_laptops:
+        titulo_crudo = laptop.get("titulo_crudo", "")
+
+        lista_titulo.append(extraer_titulo_limpio(titulo_crudo))
+        lista_marca.append(extraer_marca(titulo_crudo))
+        lista_ram.append(extraer_ram(titulo_crudo))
+        lista_almacenamiento.append(extraer_almacenamiento(titulo_crudo))
+        lista_tipo_almacenamiento.append(extraer_tipo_almacenamiento(titulo_crudo))
+
+        precio_raw = laptop.get("precio", "0")
+        try:
+            lista_precio.append(int(precio_raw))
+        except (ValueError, TypeError):
+            lista_precio.append(None)
+
+        lista_link.append(laptop.get("link", "Sin link"))
+
+    return (
+        lista_titulo,
+        lista_marca,
+        lista_ram,
+        lista_almacenamiento,
+        lista_tipo_almacenamiento,
+        lista_precio,
+        lista_link,
+    )
+
+
+if __name__ == "__main__":
+    from Scraper import descargar_pagina_mercadolibre, extraer_datos
+
+    url_prueba = "https://listado.mercadolibre.com.pe/laptop"
+    html_descargado = descargar_pagina_mercadolibre(url_prueba)
+
+    if html_descargado:
+        laptops = extraer_datos(html_descargado)
+
+        if laptops:
+            (lista_titulo, lista_marca, lista_ram, lista_almacenamiento,
+             lista_tipo_almacenamiento, lista_precio, lista_link) = procesar_laptops(laptops)
+
+            print("Lista Marca:", lista_marca)
+            print("Lista Almacenamiento:", lista_almacenamiento)
+            print("Lista Precio:", lista_precio)
