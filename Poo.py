@@ -3,19 +3,20 @@ from bs4 import BeautifulSoup
 
 class MercadoLibreApi:
 
-    def __init__(self, url):
-        self.url = url
-
-    def obtener_datos(self):
+    def obtener_datos(self, url):
         headers = {
             "User-Agent": "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)"
         }
 
         try:
-            respuesta = requests.get(self.url, headers=headers)
+            print(f"Descargando HTML desde -> {url}")
+            respuesta = requests.get(url, headers=headers)
 
             if respuesta.status_code != 200:
+                print(f"Error. Código de estado: {respuesta.status_code}")
                 return []
+
+            print("¡Conexión exitosa! HTML descargado.")
 
             sopa = BeautifulSoup(respuesta.text, "html.parser")
             lista_laptops = []
@@ -32,8 +33,14 @@ class MercadoLibreApi:
                 etiqueta_titulo = item.find(["h2", "h3"])
                 titulo = etiqueta_titulo.get_text(strip=True) if etiqueta_titulo else "Sin título"
 
-                etiqueta_precio = item.find("span", class_="andes-money-amount__fraction")
-                precio = etiqueta_precio.get_text(strip=True).replace(".", "") if etiqueta_precio else "0"
+                etiqueta_precio = item.find(
+                    "span",
+                    class_="andes-money-amount__fraction"
+                )
+                precio = (
+                    etiqueta_precio.get_text(strip=True).replace(".", "")
+                    if etiqueta_precio else "0"
+                )
 
                 if len(titulo) > 10 and precio != "0":
                     lista_laptops.append({
@@ -44,40 +51,38 @@ class MercadoLibreApi:
 
             return lista_laptops
 
-        except requests.exceptions.RequestException:
+        except requests.exceptions.RequestException as e:
+            print(f"Error de red: {e}")
             return []
 
 import re
 
 class ExtractorRegex:
 
-    MARCAS_CONOCIDAS = [
-        "HP", "Lenovo", "Dell", "Asus", "Acer", "Apple", "MacBook",
-        "Samsung", "Huawei", "MSI", "Toshiba", "Microsoft", "LG",
-        "Gateway", "Compaq", "Vaio", "Sony"
-    ]
-
-    SUB_MARCAS = {
-        "victus": "HP", "omen": "HP", "pavilion": "HP", "probook": "HP", "elitebook": "HP",
-        "ideapad": "Lenovo", "thinkpad": "Lenovo", "legion": "Lenovo", "loq": "Lenovo", "yoga": "Lenovo",
-        "vivobook": "Asus", "zenbook": "Asus", "rog": "Asus", "tuf": "Asus",
-        "inspiron": "Dell", "xps": "Dell", "latitude": "Dell", "vostro": "Dell",
-        "predator": "Acer", "nitro": "Acer", "aspire": "Acer", "swift": "Acer",
-        "galaxy book": "Samsung",
-    }
-
-    def __init__(self, lista_laptops):
-        self.lista_laptops = lista_laptops
-
     def extraer_marca(self, titulo):
-        for marca in self.MARCAS_CONOCIDAS:
+        MARCAS_CONOCIDAS = [
+            "HP", "Lenovo", "Dell", "Asus", "Acer", "Apple", "MacBook",
+            "Samsung", "Huawei", "MSI", "Toshiba", "Microsoft", "LG",
+            "Gateway", "Compaq", "Vaio", "Sony"
+        ]
+
+        SUB_MARCAS = {
+            "victus": "HP", "omen": "HP", "pavilion": "HP", "probook": "HP", "elitebook": "HP",
+            "ideapad": "Lenovo", "thinkpad": "Lenovo", "legion": "Lenovo", "loq": "Lenovo", "yoga": "Lenovo",
+            "vivobook": "Asus", "zenbook": "Asus", "rog": "Asus", "tuf": "Asus",
+            "inspiron": "Dell", "xps": "Dell", "latitude": "Dell", "vostro": "Dell",
+            "predator": "Acer", "nitro": "Acer", "aspire": "Acer", "swift": "Acer",
+            "galaxy book": "Samsung",
+        }
+
+        for marca in MARCAS_CONOCIDAS:
             patron = r"\b" + re.escape(marca) + r"\b"
             if re.search(patron, titulo, re.IGNORECASE):
                 if marca.lower() == "macbook":
                     return "Apple"
                 return marca
 
-        for sub_marca, marca_real in self.SUB_MARCAS.items():
+        for sub_marca, marca_real in SUB_MARCAS.items():
             if re.search(r"\b" + re.escape(sub_marca) + r"\b", titulo, re.IGNORECASE):
                 return marca_real
 
@@ -198,30 +203,27 @@ class ExtractorRegex:
     def extraer_titulo(self, titulo):
         return re.sub(r"\s+", " ", titulo).strip()
 
-    def procesar_datos(self):
+    def procesar_laptops(self, lista_laptops):
         lista_titulo = []
         lista_marca = []
         lista_ram = []
         lista_almacenamiento = []
-        lista_tipo = []
+        lista_tipo_almacenamiento = []
         lista_precio = []
         lista_link = []
 
-        for laptop in self.lista_laptops:
+        for laptop in lista_laptops:
             titulo = laptop.get("titulo_crudo", "")
 
             lista_titulo.append(self.extraer_titulo(titulo))
             lista_marca.append(self.extraer_marca(titulo))
             lista_ram.append(self.extraer_ram(titulo))
-
-            almacenamiento = self.extraer_almacenamiento(titulo)
-            lista_almacenamiento.append(1024 if almacenamiento is None else almacenamiento)
-
-            lista_tipo.append(self.extraer_tipo_almacenamiento(titulo))
+            lista_almacenamiento.append(self.extraer_almacenamiento(titulo))
+            lista_tipo_almacenamiento.append(self.extraer_tipo_almacenamiento(titulo))
 
             try:
                 lista_precio.append(int(laptop.get("precio", "0")))
-            except:
+            except (ValueError, TypeError):
                 lista_precio.append(None)
 
             lista_link.append(laptop.get("link", "Sin link"))
@@ -231,70 +233,25 @@ class ExtractorRegex:
             lista_marca,
             lista_ram,
             lista_almacenamiento,
-            lista_tipo,
+            lista_tipo_almacenamiento,
             lista_precio,
-            lista_link
+            lista_link,
         )
     
 import pandas as pd
-
-class Analizador:
-
-    def __init__(self, lista_titulo, lista_marca, lista_ram,
-                 lista_almacenamiento, lista_tipo,
-                 lista_precio, lista_link):
-
-        self.lista_titulo = lista_titulo
-        self.lista_marca = lista_marca
-        self.lista_ram = lista_ram
-        self.lista_almacenamiento = lista_almacenamiento
-        self.lista_tipo = lista_tipo
-        self.lista_precio = lista_precio
-        self.lista_link = lista_link
-
-    def crear_dataframe(self):
-        datos = {
-            "Titulo": self.lista_titulo,
-            "Marca": self.lista_marca,
-            "RAM": self.lista_ram,
-            "Almacenamiento": self.lista_almacenamiento,
-            "Tipo": self.lista_tipo,
-            "Precio": self.lista_precio,
-            "Link": self.lista_link
-        }
-
-        return pd.DataFrame(datos)
-
 import matplotlib.pyplot as plt
 import seaborn as sns
-import pandas as pd
 
 class Analizador:
 
-    def __init__(self, lista_titulo, lista_marca, lista_ram,
-                 lista_almacenamiento, lista_tipo,
-                 lista_precio, lista_link):
-
-        self.lista_titulo = lista_titulo
-        self.lista_marca = lista_marca
-        self.lista_ram = lista_ram
-        self.lista_almacenamiento = lista_almacenamiento
-        self.lista_tipo = lista_tipo
-        self.lista_precio = lista_precio
-        self.lista_link = lista_link
-
-    def crear_dataframe(self):
-        datos = {
-            "Titulo": self.lista_titulo,
-            "Marca": self.lista_marca,
-            "RAM": self.lista_ram,
-            "Almacenamiento": self.lista_almacenamiento,
-            "Tipo": self.lista_tipo,
-            "Lista Precio": self.lista_precio,
-            "Link": self.lista_link
+    def crear_dataframe(self, lista_marca, lista_almacenamiento, lista_precio):
+        dicc = {
+            "Marca": lista_marca,
+            "Almacenamiento": lista_almacenamiento,
+            "Lista Precio": lista_precio
         }
 
-        self.DataFrameDatos = pd.DataFrame(datos)
+        self.DataFrameDatos = pd.DataFrame(dicc)
         return self.DataFrameDatos
 
     def grafico1(self):
@@ -343,41 +300,35 @@ class Analizador:
         plt.legend(title="Almacenamiento en GB")
         plt.show()
 
-from Scraper import MercadoLibreApi
-from regex import ExtractorRegex
-from analizador import Analizador
+if __name__ == "__main__":
 
-url = "https://listado.mercadolibre.com.pe/laptop"
+    url = "https://listado.mercadolibre.com.pe/laptop"
 
-api = MercadoLibreApi(url)
-lista_laptops = api.obtener_datos()
+    api = MercadoLibreApi()
+    lista_laptops = api.obtener_datos(url)
 
-regex = ExtractorRegex(lista_laptops)
+    regex = ExtractorRegex()
 
-(
-    lista_titulo,
-    lista_marca,
-    lista_ram,
-    lista_almacenamiento,
-    lista_tipo,
-    lista_precio,
-    lista_link
-) = regex.procesar_datos()
+    (
+        lista_titulo,
+        lista_marca,
+        lista_ram,
+        lista_almacenamiento,
+        lista_tipo_almacenamiento,
+        lista_precio,
+        lista_link
+    ) = regex.procesar_laptops(lista_laptops)
 
-analizador = Analizador(
-    lista_titulo,
-    lista_marca,
-    lista_ram,
-    lista_almacenamiento,
-    lista_tipo,
-    lista_precio,
-    lista_link
-)
+    analizador = Analizador()
 
-df = analizador.crear_dataframe()
+    df = analizador.crear_dataframe(
+        lista_marca,
+        lista_almacenamiento,
+        lista_precio
+    )
 
-print(df)
+    print(df)
 
-analizador.grafico1()
-analizador.grafico2()
-analizador.grafico3()
+    analizador.grafico1()
+    analizador.grafico2()
+    analizador.grafico3()
