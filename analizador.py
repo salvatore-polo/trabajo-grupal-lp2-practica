@@ -3,7 +3,6 @@ import pandas as pd
 dicc = {"Marca": lista_marca, "Almacenamiento": lista_almacenamiento, "Lista Precio": lista_precio}
 
 DataFrameDatos = pd.DataFrame(dicc)
-DataFrameDatos
 
 import matplotlib.pyplot as plt
 import seaborn as sns
