@@ -1,1 +1,8 @@
-
+Paquetes requeridos a instalar para el correcto funcionamiento del código:
+- matplotlib.pyplot
+- seaborn
+- pandas
+- re
+- requests
+- time
+- bs4
