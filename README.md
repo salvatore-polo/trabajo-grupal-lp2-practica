@@ -10,6 +10,7 @@
 - Potosino Apaza, Andy Weber | 20241613 | Usuario: skinsz20
 - Quispe López, Daiby Jaime | 20241396 | Usuario: deiby-jql
 - Salazar Vásquez, Ytzel Aleeza | 20240733 | Usuario: ytzelsalazar
+#### Grupo D
 
 ## Análisis de ofertas de laptops en Mercado Libre Perú
 ## Objetivos
