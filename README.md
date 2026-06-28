@@ -16,8 +16,8 @@
 En Mercado Libre Perú, la oferta de laptops es un negocio bastante frecuente con respecto a sus ventas. Cada laptop tiene ciertas variables a estudiar, como su capacidad de almacenamiento, memoria RAM, marca, etc. El presente estudio busca realizar un análisis de las ofertas de estas laptops en esta plataforma de compras agarrando 3 variables de estudio:
 - Almacenamiento de la laptop (en GB)
 - Marca de la laptop
-- Precio de la laptop (en S/.)
-Se usará el siguiente enlace para el estudio: [https://listado.mercadolibre.com.pe/laptop](https://listado.mercadolibre.com.pe/laptop)
+- Precio de la laptop (en S/.)  
+Se usará el siguiente enlace para el estudio: [https://listado.mercadolibre.com.pe/laptop](https://listado.mercadolibre.com.pe/laptop)  
 En el presente proyecto se hará lo siguiente:
 - **Request:** Para poder acceder al enlace respectivo.
 - **WebScraping:** Extraer los títulos de una muestra de laptops, el cual contienen la información de interés.
