@@ -62,7 +62,7 @@ def extraer_datos(html_bruto):
 # Bloque de prueba rápido
 if __name__ == "__main__":
     # Probamos con la página 2 para confirmar que funciona
-    url_prueba = "https://listado.mercadolibre.com.pe/laptop_Desde_49"
+    url_prueba = "https://listado.mercadolibre.com.pe/laptop"
     html_descargado = descargar_pagina_mercadolibre(url_prueba)
     
     if html_descargado:
