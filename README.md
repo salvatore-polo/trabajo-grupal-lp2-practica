@@ -36,13 +36,13 @@ Para poder correr el respectivo proyecto se necesita tener instalado los siguien
 - Python v. 3.14
 - VisualStudio Code
 - Siguientes módulos de Python:
- - matplotlib.pyplot
- - seaborn
- - pandas
- - re
- - requests
- - time
- - bs4
+  - matplotlib.pyplot
+  - seaborn
+  - pandas
+  - re
+  - requests
+  - time
+  - bs4
 ## Estructura
 El proyecto está organizado de la siguiente manera:
 - README.md: Contiene información importante del proyecto.
