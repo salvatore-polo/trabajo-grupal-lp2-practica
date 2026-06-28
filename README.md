@@ -1,3 +1,4 @@
+![LogoDAEI.png](https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR0j2b53tAdK5qjHeX5PAgkpeNxW6ndQM5ckf-zIf8GwLfRhIbb46zPFCZb&s=10)
 ## --------------------- **Trabajo Grupal** ---------------------
 #### **Curso:** Lenguaje de Programación II
 #### **Docente:** Denise Rosalyn Chalán Llajaruna
