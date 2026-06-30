@@ -1,4 +1,7 @@
 Paquetes requeridos a instalar para el correcto funcionamiento del código:
+- Python v. 3.14.5
+- VisualStudioCode
+- JupyterNotebook
 - matplotlib.pyplot
 - seaborn
 - pandas
